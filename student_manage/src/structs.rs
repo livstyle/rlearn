@@ -124,7 +124,7 @@ impl School {
     pub fn addstu_toclass(&mut self, student_id: u32, class_id: u32) -> Result<(), std::io::Error> {
         // 判断班级和学生是否同时存在
         if let Some(class) = self.classes.get_mut(&class_id) {
-            if let Some(stuedent) = self.students.iter_mut().find(|stu| stu.id == class_id) {
+            if let Some(stuedent) = self.students.iter_mut().find(|stu| stu.id == student_id) {
                 class.students.push(student_id);
                 stuedent.class_no = Some(class_id);
                 Ok(())
@@ -134,6 +134,15 @@ impl School {
         } else {
             Err(Error::from(ErrorKind::NotFound))
         }
+    }
+
+    pub fn get_class_students(&self, class_id: u32) -> Result<Vec<&Student>, std::io::Error> {
+        let class = self.get_class(class_id).unwrap();
+        let student_ids = &class.students;
+        let students: Vec<&Student> = self.students.iter().filter(|student| {
+            student_ids.contains(&student.id)
+        }).collect();
+        Ok(students)
     }
 
 }

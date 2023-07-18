@@ -1,11 +1,13 @@
 use structs::{School, Student, Class};
 
+use crate::trates::Persion;
+
 mod trates;
 mod structs;
 mod manage;
 fn main() {
     let mut school = School::init(Some("Liv".to_owned()));
-    for i in 1..5 as u32{
+    for i in 1..6 as u32{
         let mut name = String::from("Student");
         name.push_str(&i.to_string());
         let student = Student {
@@ -30,10 +32,14 @@ fn main() {
         school.add_class(class);
     }
 
-    let _ = school.addstu_toclass(1, 2);
-    let _ = school.addstu_toclass(2, 2);
-    let _ = school.addstu_toclass(3, 3);
-    let _ = school.addstu_toclass(4, 3);
+    // 为学生管理分配班级
+    let _12 = school.addstu_toclass(1, 2);
+    let _22 = school.addstu_toclass(2, 2);
+    let _52 = school.addstu_toclass(5, 2);
+    let _62 = school.addstu_toclass(6, 2); // 这个不会被加入
+    println!("将学号6添加到2班的结果：{:?}", _62);
+    let _33 = school.addstu_toclass(3, 3);
+    let _43 = school.addstu_toclass(4, 3);
     let stu3 = school.get_student(3).unwrap();
     println!("查询stu3的信息: {:#?}\n===============================", stu3);
     school.remove_student(3).unwrap();
@@ -50,7 +56,15 @@ fn main() {
         grade: 2.to_string(),
     };
     school.update_student(stu2).unwrap();
-    println!("操作了更新操作后的stu2信息: {:#?}\n==================================", school.get_student(2));
+    let stu2_ = school.get_student(2).unwrap(); 
+    println!("操作了更新操作后的stu2信息: {:#?}\n==================================", stu2_);
+
+    stu2_.self_introduction();
+
+    let class2students = school.get_class_students(2).unwrap();
+
+    println!("class2students: {:#?}", class2students);
+
 
 }
 
