@@ -18,8 +18,8 @@ struct School<'a> {
 }
 
 // impl后面也要紧跟着生命周期标注
-impl<'a> School<'static> {
-    fn new() -> School<'static> {
+impl<'a> School<'a> {
+    fn new() -> School<'a> {
         let students = Vec::<Student>::new();
         let classes = HashMap::<u32, Class>::new();
         Self {
@@ -27,22 +27,26 @@ impl<'a> School<'static> {
             name: "aaa".to_owned(),
         }       
     }
-    pub fn add_class(&'a mut self, class: Class<'static>) {
+    pub fn add_class(&mut self, class: Class<'a>) {
         let id = class.id;
         self.classes.insert(id, class);
     }
 
-    pub fn add_student(&'a mut self, student: Student) {
+    pub fn add_student(&mut self, student: Student) {
         self.students.push(student);
     }
 
-    pub fn stu2class(&'static mut self, class_id: u32, student_id: u32) {
-        let student = self.students.iter().find(|s| s.id == student_id).unwrap();
-        let stu = self.classes.get_mut(&class_id).unwrap().students.as_mut().unwrap();
-        stu.push(student);
+    pub fn stu2class(&mut self, class_id: u32, student_id: u32) {
+        let student: &Student = self.students.iter().find(|s| s.id == student_id).unwrap();
+        // let stu = self.classes.get_mut(&class_id).unwrap().students.as_mut().unwrap();
+        // stu.push(student);
+        self.classes.get_mut(&class_id).unwrap().students.clone().unwrap().push(student);
+        // let class = self.classes.get_mut(&class_id).unwrap();
+        // let stuvec = class.students.as_mut().unwrap();
+        // stuvec.clone().push(student);
     }
 
-    pub fn class_students(&self, class_id: u32) -> &Option<Vec<&'static Student>>{
+    pub fn class_students(&self, class_id: u32) -> &Option<Vec<&'a Student>>{
         &self.classes.get(&class_id).unwrap().students
     }
 }
@@ -52,13 +56,20 @@ fn main() {
         id: 12,
         name: "NO12".to_owned(),
     };
-    let mut school: School<'static> = School::new();
-    school.add_student(student);
+    let student2 = Student {
+        id: 13,
+        name: "NO12".to_owned(),
+    };
+    let mut school = School::new();
     let class = Class {
         id: 1,
         name: "Class1".to_owned(),
         students: None,
     };
-    school.add_class(class);
-    // school.stu2class(1, 12);
+    school.add_student(student);
+    school.add_student(student2);
+
+    // sch.add_class(class);
+    school.stu2class(1, 12);
+    school.stu2class(1, 13);
 }
